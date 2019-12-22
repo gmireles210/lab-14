@@ -1,0 +1,17 @@
+<!--Following lab directions, created a table to migrate-->
+CREATE TABLE bookshelves (id SERIAL PRIMARY KEY, name VARCHAR(255));
+
+<!--Took book table and place into bookshelves -->
+INSERT INTO bookshelves(name) SELECT DISTINCT bookshelf FROM books;
+
+<!-- Added a bookshelf ID -->
+ALTER TABLE books ADD COLUMN bookshelf_id INT;
+
+<!-- Used the primary key on each bookshelf to fill in the bookshelf id field in the books table -->
+UPDATE books SET bookshelf_id=shelf.id FROM (SELECT * FROM bookshelves) AS shelf WHERE books.bookshelf = shelf.name;
+
+<!-- Fetched the primary key on each bookshelf and fills in the bookshelf id field in the books table -->
+ALTER TABLE books DROP COLUMN bookshelf;
+
+<!-- Made the bookshelf_id the foreign key of the books table -->
+ALTER TABLE books ADD CONSTRAINT fk_bookshelves FOREIGN KEY (bookshelf_id) REFERENCES bookshelves(id);
